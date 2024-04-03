@@ -3,6 +3,7 @@ package users
 import (
 	"assets_manager/domain/entities/user"
 	e "assets_manager/utils/exception"
+	"assets_manager/utils/query"
 	"net/http"
 )
 
@@ -14,7 +15,7 @@ func Save(user *user.User) *e.Exception {
 	return nil
 }
 
-func GetUsers() []*user.User {
+func GetUsers(query *query.IQuery) []*user.User {
 	return db_users
 }
 
@@ -26,74 +27,41 @@ func GetUserById(id uint16) (*user.User, *e.Exception) {
 		}
 	}
 
-	return &user.User{}, e.New("User Not Found", http.StatusNotFound)
+	return nil, e.New("User Not Found", http.StatusNotFound)
 }
 
-type UpdateUserType struct {
-	name  string
-	email string
-}
-
-func UpdateUser(id uint16, data UpdateUserType) (*user.User, *e.Exception) {
-
-	if data.email == "" && data.name == "" {
-		return &user.User{}, e.New("No data to update", http.StatusBadRequest)
-	}
-
-	foundUser, err := GetUserById(id)
-
-	if err != nil {
-		return &user.User{}, e.New("Cannot find user with this id", http.StatusNotFound)
-	}
-
-	if data.name != "" {
-		err := user.UpdateName(foundUser, data.name)
-
-		if err != nil {
-			return &user.User{}, e.New(err.Error(), http.StatusBadRequest)
-		}
-	}
-
-	if data.email != "" {
-		err := user.UpdateEmail(foundUser, data.email)
-
-		if err != nil {
-			return &user.User{}, e.New(err.Error(), http.StatusBadRequest)
-		}
-	}
-
+func UpdateUser(id uint16, u *user.User) *e.Exception {
 	var new_db_users []*user.User
 
-	for _, vv := range db_users {
-		if vv.ID == id {
-			new_db_users = append(new_db_users, foundUser)
+	for _, v := range db_users {
+		if v.ID == id {
+			new_db_users = append(new_db_users, u)
 		} else {
-			new_db_users = append(new_db_users, vv)
+			new_db_users = append(new_db_users, v)
 		}
 	}
 
 	db_users = new_db_users
 
-	return foundUser, nil
-
+	return nil
 }
 
 func DeleteUser(id uint16) *e.Exception {
+	var new_db_users []*user.User
+	found := false
+
 	for _, v := range db_users {
-		if v.ID == id {
-			var new_db_users []*user.User
-
-			for _, vv := range db_users {
-				if vv.ID != id {
-					new_db_users = append(new_db_users, vv)
-				}
-			}
-
-			db_users = new_db_users
-
-			return nil
+		if v.ID != id {
+			new_db_users = append(new_db_users, v)
+		} else {
+			found = true
 		}
 	}
 
-	return e.New("Cannot find user with this id", http.StatusNotFound)
+	if found {
+		db_users = new_db_users
+		return nil
+	}
+
+	return e.New("User does not exists", http.StatusNotFound)
 }

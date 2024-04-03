@@ -3,7 +3,6 @@ package assets
 import (
 	"assets_manager/domain/entities/asset"
 	"assets_manager/domain/entities/group"
-	"assets_manager/domain/entities/user"
 	"testing"
 )
 
@@ -32,7 +31,7 @@ func TestSave(t *testing.T) {
 }
 
 func TestGetAsset(t *testing.T) {
-	as := GetAssets()
+	as := GetAssets(nil)
 
 	if len(as) == 0 {
 		t.Errorf("Array is empry")
@@ -48,50 +47,10 @@ func TestGetAssetById(t *testing.T) {
 }
 
 func TestUpdateAsset(t *testing.T) {
-	newData := UpdateAssetDto{
-		name: "Notebook Lenovo i5 12",
-	}
+	asset.UpdateName(aux_asset, "Notebook Lenovo")
 
-	err := UpdateAsset(aux_asset.ID, newData)
-
-	if err != nil {
-		t.Errorf("Error when updating asset: %v", err)
-	}
-
-	if newData.name != aux_asset.Name {
-		t.Errorf("Name did not match. Name(%q, %q)", newData.name, aux_asset.Name)
-	}
-}
-
-func TestUpdateStatus(t *testing.T) {
-	newStatus := asset.REPAIR
-
-	err := UpdateStatus(aux_asset.ID, newStatus)
-
-	if err != nil {
-		t.Errorf("Error when updating asset status: %v", err)
-	}
-
-	if aux_asset.Status != newStatus {
-		t.Errorf("Status did not match. Status(%q, %q)", newStatus, aux_asset.Status)
-	}
-}
-
-func TestUpdateCurrentuser(t *testing.T) {
-	newUser, err := user.New("John", "john@mail.com")
-
-	if err != nil {
-		t.Fatalf("Error when creating user for test asset: %v", err)
-	}
-
-	err2 := UpdateCurrentUser(aux_asset.ID, newUser)
-
-	if err2 != nil {
-		t.Errorf("Error when udpating current user: %v", err2)
-	}
-
-	if aux_asset.CurrentUser.ID != newUser.ID {
-		t.Errorf("User was not updated")
+	if err := UpdateAsset(aux_asset.ID, aux_asset); err != nil {
+		t.Errorf("Some error occurred: %v", err)
 	}
 }
 

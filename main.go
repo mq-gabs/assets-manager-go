@@ -1,9 +1,5 @@
-package assets_manager
-
-import (
-	"fmt"
-)
+package main
 
 func main() {
-	fmt.Println("Hello")
+
 }

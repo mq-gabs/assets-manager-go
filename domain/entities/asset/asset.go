@@ -26,11 +26,11 @@ type Asset struct {
 
 func New(name string, group *group.Group) (*Asset, error) {
 	if err := checkName(name); err != nil {
-		return &Asset{}, err
+		return nil, err
 	}
 
 	if err := checkGroup(group); err != nil {
-		return &Asset{}, err
+		return nil, err
 	}
 
 	asset := Asset{

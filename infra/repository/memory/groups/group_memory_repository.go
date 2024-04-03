@@ -3,58 +3,43 @@ package groups
 import (
 	"assets_manager/domain/entities/group"
 	e "assets_manager/utils/exception"
+	"assets_manager/utils/query"
 )
 
-var groups []*group.Group
+var db_groups []*group.Group
 
 func Save(g *group.Group) *e.Exception {
-	groups = append(groups, g)
+	db_groups = append(db_groups, g)
 
 	return nil
 }
 
-func GetGroups() []*group.Group {
-	return groups
+func GetGroups(query *query.IQuery) []*group.Group {
+	return db_groups
 }
 
 func GetGroupById(id uint16) (*group.Group, *e.Exception) {
-	for _, v := range groups {
+	for _, v := range db_groups {
 		if v.ID == id {
 			return v, nil
 		}
 	}
 
-	return &group.Group{}, e.New("Group not found", 404)
+	return nil, e.New("Group not found", 404)
 }
 
-type UpdateGroupDto struct {
-	name string
-}
+func UpdateGroup(id uint16, g *group.Group) *e.Exception {
+	var new_db_groups []*group.Group
 
-func UpdateGroup(id uint16, data *UpdateGroupDto) *e.Exception {
-	g, err := GetGroupById(id)
-
-	if err != nil {
-		return err
-	}
-
-	errr := group.UpdateName(g, data.name)
-
-	if errr != nil {
-		return e.New(errr.Error(), 400)
-	}
-
-	var newGroups []*group.Group
-
-	for _, v := range groups {
+	for _, v := range db_groups {
 		if v.ID == id {
-			newGroups = append(newGroups, g)
+			new_db_groups = append(new_db_groups, g)
 		} else {
-			newGroups = append(newGroups, v)
+			new_db_groups = append(new_db_groups, v)
 		}
 	}
 
-	groups = newGroups
+	db_groups = new_db_groups
 
 	return nil
 }
@@ -62,13 +47,13 @@ func UpdateGroup(id uint16, data *UpdateGroupDto) *e.Exception {
 func DeleteGroup(id uint16) *e.Exception {
 	var newGroups []*group.Group
 
-	for _, v := range groups {
+	for _, v := range db_groups {
 		if v.ID != id {
 			newGroups = append(newGroups, v)
 		}
 	}
 
-	groups = newGroups
+	db_groups = newGroups
 
 	return nil
 }

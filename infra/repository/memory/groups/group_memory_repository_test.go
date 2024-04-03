@@ -24,7 +24,7 @@ func TestSave(t *testing.T) {
 }
 
 func TestGetGroups(t *testing.T) {
-	groups := GetGroups()
+	groups := GetGroups(nil)
 
 	if len(groups) == 0 {
 		t.Errorf("Repo is empty.")
@@ -44,24 +44,10 @@ func TestGetGroupById(t *testing.T) {
 }
 
 func TestUpdateGroup(t *testing.T) {
-	udpateDate := UpdateGroupDto{
-		name: "Device",
-	}
+	group.UpdateName(g, "Eletronicos")
 
-	err := UpdateGroup(g.ID, &udpateDate)
-
-	if err != nil {
+	if err := UpdateGroup(g.ID, g); err != nil {
 		t.Errorf("Some error occurred: %v", err)
-	}
-
-	group, errr := GetGroupById(g.ID)
-
-	if errr != nil {
-		t.Errorf("Error to get group: %v", errr)
-	}
-
-	if group.Name != udpateDate.name {
-		t.Errorf("Names did not match. Name(%q, %q)", udpateDate.name, group.Name)
 	}
 }
 

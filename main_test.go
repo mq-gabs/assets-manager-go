@@ -1,4 +1,4 @@
-package assets_manager
+package main
 
 import "testing"
 

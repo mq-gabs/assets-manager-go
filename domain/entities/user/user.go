@@ -13,11 +13,11 @@ type User struct {
 
 func New(name string, email string) (*User, error) {
 	if err := checkName(name); err != nil {
-		return &User{}, err
+		return nil, err
 	}
 
 	if err := checkEmail(email); err != nil {
-		return &User{}, err
+		return nil, err
 	}
 
 	user := User{

@@ -1,14 +1,14 @@
 package exception
 
 type Exception struct {
-	message    string
-	statusCode int
+	Message    string `json:"message"`
+	StatusCode int    `json:"statusCode"`
 }
 
 func New(message string, statusCode int) *Exception {
 	e := Exception{
-		message:    message,
-		statusCode: statusCode,
+		Message:    message,
+		StatusCode: statusCode,
 	}
 
 	return &e

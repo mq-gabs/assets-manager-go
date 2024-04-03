@@ -2,9 +2,8 @@ package assets
 
 import (
 	"assets_manager/domain/entities/asset"
-	"assets_manager/domain/entities/group"
-	"assets_manager/domain/entities/user"
 	e "assets_manager/utils/exception"
+	"assets_manager/utils/query"
 	"net/http"
 )
 
@@ -16,7 +15,7 @@ func Save(a *asset.Asset) *e.Exception {
 	return nil
 }
 
-func GetAssets() []*asset.Asset {
+func GetAssets(query *query.IQuery) []*asset.Asset {
 	return db_assets
 }
 
@@ -30,34 +29,7 @@ func GetAssetById(id uint16) (*asset.Asset, *e.Exception) {
 	return nil, e.New("Asset not found", http.StatusNotFound)
 }
 
-type UpdateAssetDto struct {
-	name  string
-	group *group.Group
-}
-
-func UpdateAsset(id uint16, data UpdateAssetDto) *e.Exception {
-	a, err := GetAssetById(id)
-
-	if err != nil {
-		return err
-	}
-
-	if data.name != "" {
-		err1 := asset.UpdateName(a, data.name)
-
-		if err1 != nil {
-			return e.New(err1.Error(), http.StatusBadRequest)
-		}
-	}
-
-	if data.group != nil {
-		err2 := asset.UpdateGroup(a, data.group)
-
-		if err2 != nil {
-			return e.New(err2.Error(), http.StatusBadRequest)
-		}
-	}
-
+func UpdateAsset(id uint16, a *asset.Asset) *e.Exception {
 	var new_db_assets []*asset.Asset
 
 	for _, v := range db_assets {
@@ -89,38 +61,6 @@ func DeleteAsset(id uint16) *e.Exception {
 	}
 
 	db_assets = new_db_assets
-
-	return nil
-}
-
-func UpdateStatus(id uint16, status asset.Status) *e.Exception {
-	a, err := GetAssetById(id)
-
-	if err != nil {
-		return err
-	}
-
-	errr := asset.UpdateStatus(a, status)
-
-	if errr != nil {
-		return e.New(errr.Error(), http.StatusBadRequest)
-	}
-
-	return nil
-}
-
-func UpdateCurrentUser(id uint16, user *user.User) *e.Exception {
-	a, err := GetAssetById(id)
-
-	if err != nil {
-		return err
-	}
-
-	errr := asset.UpdateCurrentUser(a, user)
-
-	if errr != nil {
-		return err
-	}
 
 	return nil
 }

@@ -12,7 +12,7 @@ type Group struct {
 
 func New(name string) (*Group, error) {
 	if err := checkName(name); err != nil {
-		return &Group{}, err
+		return nil, err
 	}
 
 	group := Group{
