@@ -70,7 +70,7 @@ func DeleteAsset(id uint16) *e.Exception {
 	return repo.DeleteAsset(id)
 }
 
-func UpdateStatus(id uint16, status asset.Status) *e.Exception {
+func ChangeStatus(id uint16, status asset.Status) *e.Exception {
 	a, err := FindAssetById(id)
 
 	if err != nil {
@@ -84,7 +84,7 @@ func UpdateStatus(id uint16, status asset.Status) *e.Exception {
 	return repo.UpdateAsset(id, a)
 }
 
-func UpdateCurrentUser(id uint16, userId uint16) *e.Exception {
+func SetCurrentUser(id uint16, userId uint16) *e.Exception {
 	user, err := users.GetUserById(id)
 
 	if err != nil {

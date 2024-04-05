@@ -1,4 +1,4 @@
-package users
+package users_use_cases
 
 import (
 	"assets_manager/domain/entities/user"
@@ -9,8 +9,13 @@ import (
 	q "assets_manager/utils/query"
 )
 
-func CreateUser(name, email string) *e.Exception {
-	u, err := user.New(name, email)
+type CreateUserDto struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+func CreateUser(data *CreateUserDto) *e.Exception {
+	u, err := user.New(data.Name, data.Email)
 
 	if err != nil {
 		return e.New(err.Error(), http.StatusBadRequest)

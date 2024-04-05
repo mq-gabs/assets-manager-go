@@ -1,7 +1,7 @@
 package query
 
 type IQuery struct {
-	Page     uint16 `json:"page"`
-	PageSize uint16 `json:"pageSize"`
+	Page     string `json:"page"`
+	PageSize string `json:"pageSize"`
 	Name     string `json:"name"`
 }

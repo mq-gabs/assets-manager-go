@@ -1,4 +1,4 @@
-package groups
+package groups_use_cases
 
 import (
 	"assets_manager/domain/entities/group"
