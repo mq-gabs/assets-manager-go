@@ -4,6 +4,7 @@ import (
 	"assets_manager/domain/entities/group"
 	"assets_manager/domain/entities/user"
 	"errors"
+	"math/rand"
 )
 
 type Status string
@@ -34,6 +35,7 @@ func New(name string, group *group.Group) (*Asset, error) {
 	}
 
 	asset := Asset{
+		ID:     uint16(rand.Uint32()),
 		Name:   name,
 		Group:  group,
 		Status: ACTIVE,
@@ -53,6 +55,10 @@ func UpdateName(asset *Asset, newName string) error {
 }
 
 func UpdateStatus(asset *Asset, newStatus Status) error {
+	if newStatus != ACTIVE && newStatus != BUSY && newStatus != INACTIVE && newStatus != REPAIR && newStatus != RESERVED {
+		return errors.New("this status is not available")
+	}
+
 	asset.Status = newStatus
 
 	return nil

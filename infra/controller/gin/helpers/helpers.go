@@ -16,7 +16,7 @@ func GetIdFromParams(c *gin.Context) (uint16, *exception.Exception) {
 		return 0, exception.New("Id not found from params", http.StatusBadRequest)
 	}
 
-	new_id, err := strconv.ParseUint(id, 16, 16)
+	new_id, err := strconv.ParseUint(id, 10, 64)
 
 	if err != nil {
 		return 0, exception.New("Id must be uint16", http.StatusBadRequest)

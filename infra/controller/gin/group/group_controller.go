@@ -54,7 +54,7 @@ func findGroupById(c *gin.Context) {
 	g, err2 := groups_use_cases.FindGroupById(id)
 
 	if err2 != nil {
-		c.IndentedJSON(err2.StatusCode, err)
+		c.IndentedJSON(err2.StatusCode, err2)
 		return
 	}
 

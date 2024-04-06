@@ -76,8 +76,10 @@ func UpdateAsset(id uint16, data *UpdateAssetDto) *e.Exception {
 		}
 	}
 
-	if err := asset.UpdateStatus(a, data.Status); err != nil {
-		return e.New(err.Error(), http.StatusBadRequest)
+	if data.Status != "" {
+		if err := asset.UpdateStatus(a, data.Status); err != nil {
+			return e.New(err.Error(), http.StatusBadRequest)
+		}
 	}
 
 	return repo.UpdateAsset(id, a)
@@ -125,6 +127,8 @@ func SetCurrentUser(id uint16, data *SetCurrentUserDto) *e.Exception {
 	if err := asset.UpdateCurrentUser(a, user); err != nil {
 		return e.New(err.Error(), http.StatusBadRequest)
 	}
+
+	asset.UpdateStatus(a, asset.BUSY)
 
 	return repo.UpdateAsset(id, a)
 }
