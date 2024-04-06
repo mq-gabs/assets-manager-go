@@ -1,20 +1,31 @@
-package assets
+package assets_use_cases
 
 import (
 	"assets_manager/domain/entities/asset"
-	"assets_manager/domain/entities/group"
 	repo "assets_manager/infra/repository/memory/assets"
 	"assets_manager/infra/repository/memory/users"
+	groups_use_cases "assets_manager/use_cases/groups"
 	e "assets_manager/utils/exception"
 	"assets_manager/utils/query"
 	"net/http"
 )
 
-func CreateAsset(name string, g *group.Group) *e.Exception {
-	a, err := asset.New(name, g)
+type CreateAssetDto struct {
+	Name    string `json:"name"`
+	GroupId uint16 `json:"groupId"`
+}
+
+func CreateAsset(data *CreateAssetDto) *e.Exception {
+	g, err := groups_use_cases.FindGroupById(data.GroupId)
 
 	if err != nil {
-		return e.New(err.Error(), http.StatusBadRequest)
+		return err
+	}
+
+	a, err2 := asset.New(data.Name, g)
+
+	if err2 != nil {
+		return e.New(err2.Error(), http.StatusBadRequest)
 	}
 
 	return repo.Save(a)
@@ -35,9 +46,9 @@ func FindAssetById(id uint16) (*asset.Asset, *e.Exception) {
 }
 
 type UpdateAssetDto struct {
-	Name   string
-	Status asset.Status
-	Group  *group.Group
+	Name    string       `json:"name"`
+	Status  asset.Status `json:"status"`
+	GroupId uint16       `json:"groupId"`
 }
 
 func UpdateAsset(id uint16, data *UpdateAssetDto) *e.Exception {
@@ -53,8 +64,14 @@ func UpdateAsset(id uint16, data *UpdateAssetDto) *e.Exception {
 		}
 	}
 
-	if data.Group != nil {
-		if err := asset.UpdateGroup(a, data.Group); err != nil {
+	if data.GroupId != 0 {
+		g, err2 := groups_use_cases.FindGroupById(data.GroupId)
+
+		if err2 != nil {
+			return err2
+		}
+
+		if err := asset.UpdateGroup(a, g); err != nil {
 			return e.New(err.Error(), http.StatusBadRequest)
 		}
 	}
@@ -70,22 +87,30 @@ func DeleteAsset(id uint16) *e.Exception {
 	return repo.DeleteAsset(id)
 }
 
-func ChangeStatus(id uint16, status asset.Status) *e.Exception {
+type ChangeStatusDto struct {
+	Status asset.Status `json:"status"`
+}
+
+func ChangeStatus(id uint16, data *ChangeStatusDto) *e.Exception {
 	a, err := FindAssetById(id)
 
 	if err != nil {
 		return err
 	}
 
-	if err := asset.UpdateStatus(a, status); err != nil {
+	if err := asset.UpdateStatus(a, data.Status); err != nil {
 		return e.New(err.Error(), http.StatusBadRequest)
 	}
 
 	return repo.UpdateAsset(id, a)
 }
 
-func SetCurrentUser(id uint16, userId uint16) *e.Exception {
-	user, err := users.GetUserById(id)
+type SetCurrentUserDto struct {
+	UserId uint16 `json:"userId"`
+}
+
+func SetCurrentUser(id uint16, data *SetCurrentUserDto) *e.Exception {
+	user, err := users.GetUserById(data.UserId)
 
 	if err != nil {
 		return err
