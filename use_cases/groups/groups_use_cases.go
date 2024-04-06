@@ -8,8 +8,12 @@ import (
 	"net/http"
 )
 
-func CreateGroup(name string) *e.Exception {
-	g, err := group.New(name)
+type CreateGroupDto struct {
+	Name string `json:"name"`
+}
+
+func CreateGroup(data *CreateGroupDto) *e.Exception {
+	g, err := group.New(data.Name)
 
 	if err != nil {
 		return e.New(err.Error(), http.StatusBadRequest)
