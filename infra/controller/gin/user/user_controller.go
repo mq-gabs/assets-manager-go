@@ -5,7 +5,6 @@ import (
 	users_use_cases "assets_manager/use_cases/users"
 	"assets_manager/utils/exception"
 	"assets_manager/utils/response"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,8 +36,6 @@ func createUser(c *gin.Context) {
 
 func listUsers(c *gin.Context) {
 	query := helpers.GetQuery(c)
-
-	fmt.Print(query)
 
 	u := users_use_cases.FindUsers(query)
 

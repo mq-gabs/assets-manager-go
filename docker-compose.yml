@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  assets-manager:
+    container_name: dev-assets-manager
+    build: .
+    ports:
+      - 8081:8080

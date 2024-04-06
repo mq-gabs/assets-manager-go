@@ -15,5 +15,5 @@ func main() {
 	group_controller.SetGroupRoutes(r)
 	assets_controller.SetAssetRoutes(r)
 
-	r.Run("localhost:8000")
+	r.Run(":8080")
 }
