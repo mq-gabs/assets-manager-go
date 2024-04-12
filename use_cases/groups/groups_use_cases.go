@@ -12,18 +12,18 @@ type CreateGroupDto struct {
 	Name string `json:"name"`
 }
 
-func CreateGroup(data *CreateGroupDto) *e.Exception {
+func CreateGroup(data *CreateGroupDto) (*group.Group, *e.Exception) {
 	g, err := group.New(data.Name)
 
 	if err != nil {
-		return e.New(err.Error(), http.StatusBadRequest)
+		return nil, e.New(err.Error(), http.StatusBadRequest)
 	}
 
 	if err := repo.Save(g); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return g, nil
 }
 
 func FindGroups(query *query.IQuery) []*group.Group {
@@ -46,24 +46,24 @@ type UpdateGroupDto struct {
 	Name string
 }
 
-func UpdateGroup(id uint16, data *UpdateGroupDto) *e.Exception {
+func UpdateGroup(id uint16, data *UpdateGroupDto) (*group.Group, *e.Exception) {
 	g, err := FindGroupById(id)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if data.Name != "" {
 		if err := group.UpdateName(g, data.Name); err != nil {
-			return e.New(err.Error(), http.StatusBadRequest)
+			return nil, e.New(err.Error(), http.StatusBadRequest)
 		}
 	}
 
 	if err := repo.UpdateGroup(id, g); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return g, nil
 }
 
 func DeleteGroup(id uint16) *e.Exception {

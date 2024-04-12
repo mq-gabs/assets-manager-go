@@ -27,12 +27,13 @@ func createGroup(c *gin.Context) {
 		return
 	}
 
-	if err := groups_use_cases.CreateGroup(&body); err != nil {
+	g, err := groups_use_cases.CreateGroup(&body)
+	if err != nil {
 		c.IndentedJSON(err.StatusCode, err)
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, response.New("Group created successfully"))
+	c.IndentedJSON(http.StatusCreated, g)
 }
 
 func listGroups(c *gin.Context) {
@@ -76,12 +77,14 @@ func updateGroupData(c *gin.Context) {
 		return
 	}
 
-	if err := groups_use_cases.UpdateGroup(id, &body); err != nil {
+	g, err := groups_use_cases.UpdateGroup(id, &body)
+
+	if err != nil {
 		c.IndentedJSON(err.StatusCode, err)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, response.New("Group updated successfully"))
+	c.IndentedJSON(http.StatusOK, g)
 }
 
 func deleteGroup(c *gin.Context) {

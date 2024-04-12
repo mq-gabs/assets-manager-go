@@ -2,6 +2,7 @@ package users_use_cases
 
 import (
 	"assets_manager/domain/entities/user"
+	"assets_manager/utils/query"
 	"testing"
 )
 
@@ -23,6 +24,14 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestFindUsers(t *testing.T) {
+	us := FindUsers(&query.IQuery{})
+
+	if len(us) == 0 {
+		t.Errorf("Users list is empty but it should not.")
+	}
+}
+
+func TestFindUserById(t *testing.T) {
 	u, err := FindUserById(aux_user.ID)
 
 	if err != nil {
