@@ -26,12 +26,14 @@ func createUser(c *gin.Context) {
 		return
 	}
 
-	if err := users_use_cases.CreateUser(&body); err != nil {
+	u, err := users_use_cases.CreateUser(&body)
+
+	if err != nil {
 		c.IndentedJSON(err.StatusCode, err)
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, response.New("User created successfully"))
+	c.IndentedJSON(http.StatusCreated, u)
 }
 
 func listUsers(c *gin.Context) {
@@ -75,12 +77,14 @@ func updateUserData(c *gin.Context) {
 		return
 	}
 
-	if err := users_use_cases.UpdateUser(id, &updateData); err != nil {
+	u, err := users_use_cases.UpdateUser(id, &updateData)
+
+	if err != nil {
 		c.IndentedJSON(err.StatusCode, err)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, response.New("Usuer updated successfully"))
+	c.IndentedJSON(http.StatusOK, u)
 }
 
 func deleteUser(c *gin.Context) {

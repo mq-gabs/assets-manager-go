@@ -14,18 +14,18 @@ type CreateUserDto struct {
 	Email string `json:"email"`
 }
 
-func CreateUser(data *CreateUserDto) *e.Exception {
+func CreateUser(data *CreateUserDto) (*user.User, *e.Exception) {
 	u, err := user.New(data.Name, data.Email)
 
 	if err != nil {
-		return e.New(err.Error(), http.StatusBadRequest)
+		return nil, e.New(err.Error(), http.StatusBadRequest)
 	}
 
 	if err := repo.Save(u); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return u, nil
 }
 
 func FindUsers(query *q.IQuery) []*user.User {
@@ -50,30 +50,30 @@ type UpdateUserDto struct {
 	Email string
 }
 
-func UpdateUser(id uint16, data *UpdateUserDto) *e.Exception {
+func UpdateUser(id uint16, data *UpdateUserDto) (*user.User, *e.Exception) {
 	u, err := FindUserById(id)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if data.Name != "" {
 		if err := user.UpdateName(u, data.Name); err != nil {
-			return e.New(err.Error(), http.StatusBadRequest)
+			return nil, e.New(err.Error(), http.StatusBadRequest)
 		}
 	}
 
 	if data.Email != "" {
 		if err := user.UpdateEmail(u, data.Email); err != nil {
-			return e.New(err.Error(), http.StatusBadRequest)
+			return nil, e.New(err.Error(), http.StatusBadRequest)
 		}
 	}
 
 	if err := repo.UpdateUser(id, u); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return u, nil
 }
 
 func DeleteUser(id uint16) *e.Exception {
