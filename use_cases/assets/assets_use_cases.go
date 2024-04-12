@@ -15,20 +15,26 @@ type CreateAssetDto struct {
 	GroupId uint16 `json:"groupId"`
 }
 
-func CreateAsset(data *CreateAssetDto) *e.Exception {
+func CreateAsset(data *CreateAssetDto) (*asset.Asset, *e.Exception) {
 	g, err := groups_use_cases.FindGroupById(data.GroupId)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	a, err2 := asset.New(data.Name, g)
 
 	if err2 != nil {
-		return e.New(err2.Error(), http.StatusBadRequest)
+		return nil, e.New(err2.Error(), http.StatusBadRequest)
 	}
 
-	return repo.Save(a)
+	err3 := repo.Save(a)
+
+	if err3 != nil {
+		return nil, err3
+	}
+
+	return a, nil
 }
 
 func FindAssets(query *query.IQuery) []*asset.Asset {
@@ -51,16 +57,16 @@ type UpdateAssetDto struct {
 	GroupId uint16       `json:"groupId"`
 }
 
-func UpdateAsset(id uint16, data *UpdateAssetDto) *e.Exception {
+func UpdateAsset(id uint16, data *UpdateAssetDto) (*asset.Asset, *e.Exception) {
 	a, err := FindAssetById(id)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if data.Name != "" && data.Name != a.Name {
 		if err := asset.UpdateName(a, data.Name); err != nil {
-			return e.New(err.Error(), http.StatusBadRequest)
+			return nil, e.New(err.Error(), http.StatusBadRequest)
 		}
 	}
 
@@ -68,21 +74,27 @@ func UpdateAsset(id uint16, data *UpdateAssetDto) *e.Exception {
 		g, err2 := groups_use_cases.FindGroupById(data.GroupId)
 
 		if err2 != nil {
-			return err2
+			return nil, err2
 		}
 
 		if err := asset.UpdateGroup(a, g); err != nil {
-			return e.New(err.Error(), http.StatusBadRequest)
+			return nil, e.New(err.Error(), http.StatusBadRequest)
 		}
 	}
 
 	if data.Status != "" {
 		if err := asset.UpdateStatus(a, data.Status); err != nil {
-			return e.New(err.Error(), http.StatusBadRequest)
+			return nil, e.New(err.Error(), http.StatusBadRequest)
 		}
 	}
 
-	return repo.UpdateAsset(id, a)
+	err3 := repo.UpdateAsset(id, a)
+
+	if err3 != nil {
+		return nil, err3
+	}
+
+	return a, nil
 }
 
 func DeleteAsset(id uint16) *e.Exception {
@@ -93,42 +105,54 @@ type ChangeStatusDto struct {
 	Status asset.Status `json:"status"`
 }
 
-func ChangeStatus(id uint16, data *ChangeStatusDto) *e.Exception {
+func ChangeStatus(id uint16, data *ChangeStatusDto) (*asset.Asset, *e.Exception) {
 	a, err := FindAssetById(id)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := asset.UpdateStatus(a, data.Status); err != nil {
-		return e.New(err.Error(), http.StatusBadRequest)
+		return nil, e.New(err.Error(), http.StatusBadRequest)
 	}
 
-	return repo.UpdateAsset(id, a)
+	err2 := repo.UpdateAsset(id, a)
+
+	if err2 != nil {
+		return nil, err2
+	}
+
+	return a, nil
 }
 
 type SetCurrentUserDto struct {
 	UserId uint16 `json:"userId"`
 }
 
-func SetCurrentUser(id uint16, data *SetCurrentUserDto) *e.Exception {
+func SetCurrentUser(id uint16, data *SetCurrentUserDto) (*asset.Asset, *e.Exception) {
 	user, err := users.GetUserById(data.UserId)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	a, err := FindAssetById(id)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := asset.UpdateCurrentUser(a, user); err != nil {
-		return e.New(err.Error(), http.StatusBadRequest)
+		return nil, e.New(err.Error(), http.StatusBadRequest)
 	}
 
 	asset.UpdateStatus(a, asset.BUSY)
 
-	return repo.UpdateAsset(id, a)
+	err2 := repo.UpdateAsset(id, a)
+
+	if err2 != nil {
+		return nil, err2
+	}
+
+	return a, nil
 }

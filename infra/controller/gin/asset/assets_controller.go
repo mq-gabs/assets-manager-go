@@ -28,12 +28,14 @@ func createAsset(c *gin.Context) {
 		return
 	}
 
-	if err := assets_use_cases.CreateAsset(&body); err != nil {
+	a, err := assets_use_cases.CreateAsset(&body)
+
+	if err != nil {
 		c.IndentedJSON(err.StatusCode, err)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, response.New("Asset created successfully"))
+	c.IndentedJSON(http.StatusOK, a)
 }
 
 func listAssets(c *gin.Context) {
@@ -77,14 +79,14 @@ func updateAssetData(c *gin.Context) {
 		return
 	}
 
-	err2 := assets_use_cases.UpdateAsset(id, &body)
+	a, err2 := assets_use_cases.UpdateAsset(id, &body)
 
 	if err2 != nil {
 		c.IndentedJSON(err2.StatusCode, err2)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, response.New("Asset updated successfully"))
+	c.IndentedJSON(http.StatusOK, a)
 }
 
 func deleteAsset(c *gin.Context) {
@@ -118,12 +120,13 @@ func changeStatus(c *gin.Context) {
 		return
 	}
 
-	if err2 := assets_use_cases.ChangeStatus(id, &body); err2 != nil {
+	a, err2 := assets_use_cases.ChangeStatus(id, &body)
+	if err2 != nil {
 		c.IndentedJSON(err2.StatusCode, err2)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, response.New("Assets status updated successfully"))
+	c.IndentedJSON(http.StatusOK, a)
 }
 
 func setCurrentUser(c *gin.Context) {
@@ -141,10 +144,11 @@ func setCurrentUser(c *gin.Context) {
 		return
 	}
 
-	if err2 := assets_use_cases.SetCurrentUser(id, &body); err2 != nil {
+	a, err2 := assets_use_cases.SetCurrentUser(id, &body)
+	if err2 != nil {
 		c.IndentedJSON(err2.StatusCode, err2)
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, response.New("Assets current user updated successfully"))
+	c.IndentedJSON(http.StatusOK, a)
 }
